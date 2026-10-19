@@ -1,0 +1,45 @@
+# Dart/Flutter
+.dart_tool/
+.pub/
+build/
+*.pubspec.lock
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+android/app/build/
+android/app/intermediates/
+android/captures/
+android/gradlew
+android/gradle/wrapper/
+ios/Runner/GeneratedPluginRegistrant.*
+macos/Flutter/GeneratedPluginRegistrant.*
+windows/runner/
+linux/ephemeral/
+
+# Sensitive
+.env
+*.env
+*.key
+*.pem
+keystore/
+secrets/
+
+# Coverage
+coverage/
+lcov.info
+
+# Logs
+*.log
+flutter_*.log

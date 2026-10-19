@@ -1,0 +1,21 @@
+name: plexus_mesh
+description: Plexus mesh layer — neighbor table, routing, store-and-forward queue.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  plexus_core:
+    path: ../plexus_core
+  plexus_transport:
+    path: ../plexus_transport
+  plexus_discovery:
+    path: ../plexus_discovery
+  convert: ^3.1.1
+  meta: ^1.18.0
+
+dev_dependencies:
+  test: ^1.26.0
+  mocktail: ^1.0.4

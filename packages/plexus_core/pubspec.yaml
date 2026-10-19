@@ -1,0 +1,16 @@
+name: plexus_core
+description: Plexus domain layer — entities, value objects, and repository interfaces. Pure Dart, no Flutter, no platform dependencies.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  meta: ^1.18.0
+  crypto: ^3.0.6
+  convert: ^3.1.1
+
+dev_dependencies:
+  test: ^1.26.0
+  mocktail: ^1.0.4
