@@ -2,7 +2,6 @@
 library plexus_protocol.codecs.frame_codec;
 
 import 'package:plexus_protocol/plexus_protocol.dart';
-import 'cbor_codec.dart';
 
 /// Encodes an [Envelope] to CBOR bytes.
 List<int> encodeEnvelope(Envelope envelope) {
@@ -19,16 +18,19 @@ List<int> encodeEnvelope(Envelope envelope) {
     'p': envelope.payload,
     if (envelope.routingHeaders != null) 'rh': envelope.routingHeaders,
   };
-  return cborEncode(map);
+  return cborEncodeMap(map);
 }
 
 /// Decodes CBOR bytes into an [Envelope].
 Envelope decodeEnvelope(List<int> bytes) {
-  final map = cborDecode(bytes) as Map<dynamic, dynamic>;
+  final map = cborDecodeMap(bytes);
 
   final protocolVersion = map['v'] as int;
   final frameTypeCode = map['t'] as int;
-  final frameType = FrameType.fromCode(frameTypeCode);
+  final frameType = FrameType.values.firstWhere(
+    (t) => t.code == frameTypeCode,
+    orElse: () => throw ArgumentError('Unknown frame type code: $frameTypeCode'),
+  );
   final fromPeerId = map['f'] as String;
   final toPeerId = map['to'] as String?;
   final messageId = map['m'] as String;
@@ -58,69 +60,68 @@ Envelope decodeEnvelope(List<int> bytes) {
 List<int> encodePayload(FrameType type, dynamic payload) {
   switch (type) {
     case FrameType.request:
-      return cborEncode((payload as RequestFrame).toMap());
+      return cborEncodeMap((payload as RequestFrame).toMap());
     case FrameType.accept:
-      return cborEncode((payload as AcceptFrame).toMap());
+      return cborEncodeMap((payload as AcceptFrame).toMap());
     case FrameType.reject:
-      return cborEncode((payload as RejectFrame).toMap());
+      return cborEncodeMap((payload as RejectFrame).toMap());
     case FrameType.cancel:
-      return cborEncode((payload as CancelFrame).toMap());
+      return cborEncodeMap((payload as CancelFrame).toMap());
     case FrameType.identity:
-      return cborEncode((payload as IdentityFrame).toMap());
+      return cborEncodeMap((payload as IdentityFrame).toMap());
     case FrameType.identityAck:
-      return cborEncode((payload as IdentityAckFrame).toMap());
+      return cborEncodeMap((payload as IdentityAckFrame).toMap());
     case FrameType.capability:
-      return cborEncode((payload as CapabilityFrame).toMap());
+      return cborEncodeMap((payload as CapabilityFrame).toMap());
     case FrameType.chatMessage:
-      return cborEncode((payload as ChatMessageFrame).toMap());
+      return cborEncodeMap((payload as ChatMessageFrame).toMap());
     case FrameType.keepalive:
-      return cborEncode((payload as KeepaliveFrame).toMap());
+      return cborEncodeMap((payload as KeepaliveFrame).toMap());
     case FrameType.close:
-      return cborEncode((payload as CloseFrame).toMap());
+      return cborEncodeMap((payload as CloseFrame).toMap());
     case FrameType.error:
-      return cborEncode((payload as ErrorFrame).toMap());
+      return cborEncodeMap((payload as ErrorFrame).toMap());
     case FrameType.meshRoute:
-      return cborEncode((payload as MeshRouteFrame).toMap());
+      return cborEncodeMap((payload as MeshRouteFrame).toMap());
     case FrameType.meshForward:
-      return cborEncode((payload as MeshForwardFrame).toMap());
+      return cborEncodeMap((payload as MeshForwardFrame).toMap());
     default:
-      return cborEncode({});
+      return cborEncodeMap({});
   }
 }
 
 /// Decodes a frame payload from CBOR bytes based on its [FrameType].
 dynamic decodePayload(FrameType type, List<int> bytes) {
-  final map = cborDecode(bytes) as Map<dynamic, dynamic>;
-  final typedMap = map.map((k, v) => MapEntry(k.toString(), v));
+  final map = cborDecodeMap(bytes);
 
   switch (type) {
     case FrameType.request:
-      return RequestFrame.fromMap(typedMap);
+      return RequestFrame.fromMap(map);
     case FrameType.accept:
-      return AcceptFrame.fromMap(typedMap);
+      return AcceptFrame.fromMap(map);
     case FrameType.reject:
-      return RejectFrame.fromMap(typedMap);
+      return RejectFrame.fromMap(map);
     case FrameType.cancel:
-      return CancelFrame.fromMap(typedMap);
+      return CancelFrame.fromMap(map);
     case FrameType.identity:
-      return IdentityFrame.fromMap(typedMap);
+      return IdentityFrame.fromMap(map);
     case FrameType.identityAck:
-      return IdentityAckFrame.fromMap(typedMap);
+      return IdentityAckFrame.fromMap(map);
     case FrameType.capability:
-      return CapabilityFrame.fromMap(typedMap);
+      return CapabilityFrame.fromMap(map);
     case FrameType.chatMessage:
-      return ChatMessageFrame.fromMap(typedMap);
+      return ChatMessageFrame.fromMap(map);
     case FrameType.keepalive:
-      return KeepaliveFrame.fromMap(typedMap);
+      return KeepaliveFrame.fromMap(map);
     case FrameType.close:
-      return CloseFrame.fromMap(typedMap);
+      return CloseFrame.fromMap(map);
     case FrameType.error:
-      return ErrorFrame.fromMap(typedMap);
+      return ErrorFrame.fromMap(map);
     case FrameType.meshRoute:
-      return MeshRouteFrame.fromMap(typedMap);
+      return MeshRouteFrame.fromMap(map);
     case FrameType.meshForward:
-      return MeshForwardFrame.fromMap(typedMap);
+      return MeshForwardFrame.fromMap(map);
     default:
-      return typedMap;
+      return map;
   }
 }

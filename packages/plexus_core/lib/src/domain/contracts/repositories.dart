@@ -23,88 +23,105 @@ import '../value_objects/peer_id.dart';
 
 /// Persistence for `Identity`.
 abstract class IdentityRepository {
-  Result<Identity, DatabaseFailure> save(Identity identity);
-  Result<Identity?, DatabaseFailure> getByDeviceId(DeviceId deviceId);
-  Result<Identity?, DatabaseFailure> getByFingerprint(Fingerprint fingerprint);
-  Result<void, DatabaseFailure> delete(DeviceId deviceId);
-  Result<List<Identity>, DatabaseFailure> getAll();
+  Future<Result<Identity, DatabaseFailure>> save(Identity identity);
+  Future<Result<Identity?, DatabaseFailure>> getByDeviceId(
+    DeviceId deviceId,
+  );
+  Future<Result<Identity?, DatabaseFailure>> getByFingerprint(
+    Fingerprint fingerprint,
+  );
+  Future<Result<void, DatabaseFailure>> delete(DeviceId deviceId);
+  Future<Result<List<Identity>, DatabaseFailure>> getAll();
 }
 
 /// Persistence for `Peer`.
 abstract class PeerRepository {
-  Result<Peer, DatabaseFailure> save(Peer peer);
-  Result<Peer?, DatabaseFailure> getById(PeerId peerId);
-  Result<List<Peer>, DatabaseFailure> getAll();
-  Result<List<Peer>, DatabaseFailure> getTrusted();
-  Result<void, DatabaseFailure> delete(PeerId peerId);
-  Result<void, DatabaseFailure> updateLastSeen(PeerId peerId, int timestamp);
+  Future<Result<Peer, DatabaseFailure>> save(Peer peer);
+  Future<Result<Peer?, DatabaseFailure>> getById(PeerId peerId);
+  Future<Result<List<Peer>, DatabaseFailure>> getAll();
+  Future<Result<List<Peer>, DatabaseFailure>> getTrusted();
+  Future<Result<void, DatabaseFailure>> delete(PeerId peerId);
+  Future<Result<void, DatabaseFailure>> updateLastSeen(
+    PeerId peerId,
+    int timestamp,
+  );
 }
 
 /// Persistence for `Message`.
 abstract class MessageRepository {
-  Result<Message, DatabaseFailure> save(Message message);
-  Result<Message?, DatabaseFailure> getById(MessageId messageId);
-  Result<List<Message>, DatabaseFailure> getByConversation(
+  Future<Result<Message, DatabaseFailure>> save(Message message);
+  Future<Result<Message?, DatabaseFailure>> getById(MessageId messageId);
+  Future<Result<List<Message>, DatabaseFailure>> getByConversation(
     int conversationId, {
     int? limit,
     int? offset,
   });
-  Result<List<Message>, DatabaseFailure> getPendingDelivery();
-  Result<void, DatabaseFailure> updateStatus(
+  Future<Result<List<Message>, DatabaseFailure>> getPendingDelivery();
+  Future<Result<void, DatabaseFailure>> updateStatus(
     MessageId messageId,
     DeliveryStatus status, {
     int? deliveredAt,
     int? readAt,
   });
-  Result<void, DatabaseFailure> delete(MessageId messageId);
+  Future<Result<void, DatabaseFailure>> delete(MessageId messageId);
 }
 
 /// Persistence for `Conversation`.
 abstract class ConversationRepository {
-  Result<Conversation, DatabaseFailure> save(Conversation conversation);
-  Result<Conversation?, DatabaseFailure> getById(int id);
-  Result<List<Conversation>, DatabaseFailure> getAll({
+  Future<Result<Conversation, DatabaseFailure>> save(
+    Conversation conversation,
+  );
+  Future<Result<Conversation?, DatabaseFailure>> getById(int id);
+  Future<Result<List<Conversation>, DatabaseFailure>> getAll({
     bool includeArchived = false,
   });
-  Result<List<Conversation>, DatabaseFailure> getByPeer(PeerId peerId);
-  Result<void, DatabaseFailure> delete(int id);
+  Future<Result<List<Conversation>, DatabaseFailure>> getByPeer(PeerId peerId);
+  Future<Result<void, DatabaseFailure>> delete(int id);
 }
 
 /// Persistence for `TrustRecord`.
 abstract class TrustRepository {
-  Result<TrustRecord, DatabaseFailure> save(TrustRecord record);
-  Result<TrustRecord?, DatabaseFailure> getByPeer(PeerId peerId);
-  Result<List<TrustRecord>, DatabaseFailure> getAllActive();
-  Result<void, DatabaseFailure> revoke(PeerId peerId);
+  Future<Result<TrustRecord, DatabaseFailure>> save(TrustRecord record);
+  Future<Result<TrustRecord?, DatabaseFailure>> getByPeer(PeerId peerId);
+  Future<Result<List<TrustRecord>, DatabaseFailure>> getAllActive();
+  Future<Result<void, DatabaseFailure>> revoke(PeerId peerId);
 }
 
 /// Persistence for `FileTransfer`.
 abstract class FileTransferRepository {
-  Result<FileTransfer, DatabaseFailure> save(FileTransfer transfer);
-  Result<FileTransfer?, DatabaseFailure> getById(String transferId);
-  Result<List<FileTransfer>, DatabaseFailure> getByConversation(
+  Future<Result<FileTransfer, DatabaseFailure>> save(FileTransfer transfer);
+  Future<Result<FileTransfer?, DatabaseFailure>> getById(String transferId);
+  Future<Result<List<FileTransfer>, DatabaseFailure>> getByConversation(
     int conversationId,
   );
-  Result<List<FileTransfer>, DatabaseFailure> getPending();
-  Result<void, DatabaseFailure> updateProgress(String transferId, double progress);
-  Result<void, DatabaseFailure> complete(String transferId);
+  Future<Result<List<FileTransfer>, DatabaseFailure>> getPending();
+  Future<Result<void, DatabaseFailure>> updateProgress(
+    String transferId,
+    double progress,
+  );
+  Future<Result<void, DatabaseFailure>> complete(String transferId);
 }
 
 /// Persistence for `Group`.
 abstract class GroupRepository {
-  Result<Group, DatabaseFailure> save(Group group);
-  Result<Group?, DatabaseFailure> getById(String groupId);
-  Result<List<Group>, DatabaseFailure> getAll();
-  Result<void, DatabaseFailure> delete(String groupId);
+  Future<Result<Group, DatabaseFailure>> save(Group group);
+  Future<Result<Group?, DatabaseFailure>> getById(String groupId);
+  Future<Result<List<Group>, DatabaseFailure>> getAll();
+  Future<Result<void, DatabaseFailure>> delete(String groupId);
 }
 
 /// Persistence for `GroupMember`.
 abstract class GroupMemberRepository {
-  Result<GroupMember, DatabaseFailure> save(GroupMember member);
-  Result<List<GroupMember>, DatabaseFailure> getByGroup(String groupId);
-  Result<GroupMember?, DatabaseFailure> getMember(
+  Future<Result<GroupMember, DatabaseFailure>> save(GroupMember member);
+  Future<Result<List<GroupMember>, DatabaseFailure>> getByGroup(
+    String groupId,
+  );
+  Future<Result<GroupMember?, DatabaseFailure>> getMember(
     String groupId,
     PeerId peerId,
   );
-  Result<void, DatabaseFailure> removeMember(String groupId, PeerId peerId);
+  Future<Result<void, DatabaseFailure>> removeMember(
+    String groupId,
+    PeerId peerId,
+  );
 }

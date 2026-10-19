@@ -4,7 +4,7 @@
 /// CBOR-encoded and placed in the [Envelope.payload].
 library plexus_protocol.protocol_messages;
 
-import 'package:plexus_protocol/plexus_protocol.dart';
+import 'frame_type.dart';
 
 /// Connection request frame (handshake initiation).
 class RequestFrame {
@@ -26,8 +26,29 @@ class RequestFrame {
     required this.nonce,
   });
 
-  Map<String, dynamic> toMap();
-  factory RequestFrame.fromMap(Map<String, dynamic> map);
+  Map<String, dynamic> toMap() {
+    return {
+      'deviceId': deviceId,
+      'displayName': displayName,
+      'publicKey': publicKey,
+      'fingerprint': fingerprint,
+      'supportedTransports': supportedTransports.toList(),
+      'meshRelayCapable': meshRelayCapable,
+      'nonce': nonce,
+    };
+  }
+
+  factory RequestFrame.fromMap(Map<String, dynamic> map) {
+    return RequestFrame(
+      deviceId: map['deviceId'] as String,
+      displayName: map['displayName'] as String,
+      publicKey: map['publicKey'] as String,
+      fingerprint: map['fingerprint'] as String,
+      supportedTransports: (map['supportedTransports'] as List).cast<int>().toSet(),
+      meshRelayCapable: map['meshRelayCapable'] as bool? ?? false,
+      nonce: map['nonce'] as String,
+    );
+  }
 }
 
 /// Connection accept frame (handshake response).
@@ -52,8 +73,31 @@ class AcceptFrame {
     required this.theirNonce,
   });
 
-  Map<String, dynamic> toMap();
-  factory AcceptFrame.fromMap(Map<String, dynamic> map);
+  Map<String, dynamic> toMap() {
+    return {
+      'deviceId': deviceId,
+      'displayName': displayName,
+      'publicKey': publicKey,
+      'fingerprint': fingerprint,
+      'supportedTransports': supportedTransports.toList(),
+      'meshRelayCapable': meshRelayCapable,
+      'nonce': nonce,
+      'theirNonce': theirNonce,
+    };
+  }
+
+  factory AcceptFrame.fromMap(Map<String, dynamic> map) {
+    return AcceptFrame(
+      deviceId: map['deviceId'] as String,
+      displayName: map['displayName'] as String,
+      publicKey: map['publicKey'] as String,
+      fingerprint: map['fingerprint'] as String,
+      supportedTransports: (map['supportedTransports'] as List).cast<int>().toSet(),
+      meshRelayCapable: map['meshRelayCapable'] as bool? ?? false,
+      nonce: map['nonce'] as String,
+      theirNonce: map['theirNonce'] as String,
+    );
+  }
 }
 
 /// Connection reject frame.
@@ -63,8 +107,19 @@ class RejectFrame {
 
   const RejectFrame({required this.reason, this.code});
 
-  Map<String, dynamic> toMap();
-  factory RejectFrame.fromMap(Map<String, dynamic> map);
+  Map<String, dynamic> toMap() {
+    return {
+      'reason': reason,
+      if (code != null) 'code': code,
+    };
+  }
+
+  factory RejectFrame.fromMap(Map<String, dynamic> map) {
+    return RejectFrame(
+      reason: map['reason'] as String,
+      code: map['code'] as String?,
+    );
+  }
 }
 
 /// Connection cancel frame.
@@ -73,8 +128,13 @@ class CancelFrame {
 
   const CancelFrame({required this.reason});
 
-  Map<String, dynamic> toMap();
-  factory CancelFrame.fromMap(Map<String, dynamic> map);
+  Map<String, dynamic> toMap() {
+    return {'reason': reason};
+  }
+
+  factory CancelFrame.fromMap(Map<String, dynamic> map) {
+    return CancelFrame(reason: map['reason'] as String);
+  }
 }
 
 /// Identity exchange frame.
@@ -89,8 +149,21 @@ class IdentityFrame {
     required this.displayName,
   });
 
-  Map<String, dynamic> toMap();
-  factory IdentityFrame.fromMap(Map<String, dynamic> map);
+  Map<String, dynamic> toMap() {
+    return {
+      'publicKey': publicKey,
+      'fingerprint': fingerprint,
+      'displayName': displayName,
+    };
+  }
+
+  factory IdentityFrame.fromMap(Map<String, dynamic> map) {
+    return IdentityFrame(
+      publicKey: map['publicKey'] as String,
+      fingerprint: map['fingerprint'] as String,
+      displayName: map['displayName'] as String,
+    );
+  }
 }
 
 /// Identity acknowledgment frame.
@@ -100,8 +173,19 @@ class IdentityAckFrame {
 
   const IdentityAckFrame({required this.fingerprint, required this.verified});
 
-  Map<String, dynamic> toMap();
-  factory IdentityAckFrame.fromMap(Map<String, dynamic> map);
+  Map<String, dynamic> toMap() {
+    return {
+      'fingerprint': fingerprint,
+      'verified': verified,
+    };
+  }
+
+  factory IdentityAckFrame.fromMap(Map<String, dynamic> map) {
+    return IdentityAckFrame(
+      fingerprint: map['fingerprint'] as String,
+      verified: map['verified'] as bool,
+    );
+  }
 }
 
 /// Capability advertisement frame.
@@ -118,8 +202,23 @@ class CapabilityFrame {
     this.calls = false,
   });
 
-  Map<String, dynamic> toMap();
-  factory CapabilityFrame.fromMap(Map<String, dynamic> map);
+  Map<String, dynamic> toMap() {
+    return {
+      'capabilities': capabilities.toList(),
+      'meshRelay': meshRelay,
+      'fileTransfer': fileTransfer,
+      'calls': calls,
+    };
+  }
+
+  factory CapabilityFrame.fromMap(Map<String, dynamic> map) {
+    return CapabilityFrame(
+      capabilities: (map['capabilities'] as List).cast<int>().toSet(),
+      meshRelay: map['meshRelay'] as bool? ?? false,
+      fileTransfer: map['fileTransfer'] as bool? ?? false,
+      calls: map['calls'] as bool? ?? false,
+    );
+  }
 }
 
 /// Chat message frame.
@@ -140,8 +239,27 @@ class ChatMessageFrame {
     required this.timestamp,
   });
 
-  Map<String, dynamic> toMap();
-  factory ChatMessageFrame.fromMap(Map<String, dynamic> map);
+  Map<String, dynamic> toMap() {
+    return {
+      'conversationId': conversationId,
+      'messageId': messageId,
+      'senderPeerId': senderPeerId,
+      if (recipientPeerId != null) 'recipientPeerId': recipientPeerId,
+      'encryptedPayload': encryptedPayload,
+      'timestamp': timestamp,
+    };
+  }
+
+  factory ChatMessageFrame.fromMap(Map<String, dynamic> map) {
+    return ChatMessageFrame(
+      conversationId: map['conversationId'] as String,
+      messageId: map['messageId'] as String,
+      senderPeerId: map['senderPeerId'] as String,
+      recipientPeerId: map['recipientPeerId'] as String?,
+      encryptedPayload: (map['encryptedPayload'] as List).cast<int>(),
+      timestamp: map['timestamp'] as int,
+    );
+  }
 }
 
 /// Keepalive frame.
@@ -150,8 +268,13 @@ class KeepaliveFrame {
 
   const KeepaliveFrame({required this.timestamp});
 
-  Map<String, dynamic> toMap();
-  factory KeepaliveFrame.fromMap(Map<String, dynamic> map);
+  Map<String, dynamic> toMap() {
+    return {'timestamp': timestamp};
+  }
+
+  factory KeepaliveFrame.fromMap(Map<String, dynamic> map) {
+    return KeepaliveFrame(timestamp: map['timestamp'] as int);
+  }
 }
 
 /// Close connection frame.
@@ -160,8 +283,13 @@ class CloseFrame {
 
   const CloseFrame({required this.reason});
 
-  Map<String, dynamic> toMap();
-  factory CloseFrame.fromMap(Map<String, dynamic> map);
+  Map<String, dynamic> toMap() {
+    return {'reason': reason};
+  }
+
+  factory CloseFrame.fromMap(Map<String, dynamic> map) {
+    return CloseFrame(reason: map['reason'] as String);
+  }
 }
 
 /// Error frame.
@@ -176,8 +304,21 @@ class ErrorFrame {
     this.isRetryable = false,
   });
 
-  Map<String, dynamic> toMap();
-  factory ErrorFrame.fromMap(Map<String, dynamic> map);
+  Map<String, dynamic> toMap() {
+    return {
+      'code': code,
+      'message': message,
+      'isRetryable': isRetryable,
+    };
+  }
+
+  factory ErrorFrame.fromMap(Map<String, dynamic> map) {
+    return ErrorFrame(
+      code: map['code'] as String,
+      message: map['message'] as String,
+      isRetryable: map['isRetryable'] as bool? ?? false,
+    );
+  }
 }
 
 /// Mesh route announcement frame.
@@ -194,8 +335,23 @@ class MeshRouteFrame {
     required this.rttMs,
   });
 
-  Map<String, dynamic> toMap();
-  factory MeshRouteFrame.fromMap(Map<String, dynamic> map);
+  Map<String, dynamic> toMap() {
+    return {
+      'targetPeerId': targetPeerId,
+      'viaPeerId': viaPeerId,
+      'linkQuality': linkQuality,
+      'rttMs': rttMs,
+    };
+  }
+
+  factory MeshRouteFrame.fromMap(Map<String, dynamic> map) {
+    return MeshRouteFrame(
+      targetPeerId: map['targetPeerId'] as String,
+      viaPeerId: map['viaPeerId'] as String,
+      linkQuality: (map['linkQuality'] as num).toDouble(),
+      rttMs: map['rttMs'] as int,
+    );
+  }
 }
 
 /// Mesh forward frame (store-and-forward).
@@ -220,6 +376,29 @@ class MeshForwardFrame {
     required this.originalTtl,
   });
 
-  Map<String, dynamic> toMap();
-  factory MeshForwardFrame.fromMap(Map<String, dynamic> map);
+  Map<String, dynamic> toMap() {
+    return {
+      'targetPeerId': targetPeerId,
+      'originalSender': originalSender,
+      'originalRecipient': originalRecipient,
+      'originalMessageId': originalMessageId,
+      'originalPayload': originalPayload,
+      'originalHopCount': originalHopCount,
+      'originalMaxHops': originalMaxHops,
+      'originalTtl': originalTtl,
+    };
+  }
+
+  factory MeshForwardFrame.fromMap(Map<String, dynamic> map) {
+    return MeshForwardFrame(
+      targetPeerId: map['targetPeerId'] as String,
+      originalSender: map['originalSender'] as String,
+      originalRecipient: map['originalRecipient'] as String,
+      originalMessageId: map['originalMessageId'] as String,
+      originalPayload: (map['originalPayload'] as List).cast<int>(),
+      originalHopCount: map['originalHopCount'] as int,
+      originalMaxHops: map['originalMaxHops'] as int,
+      originalTtl: map['originalTtl'] as int,
+    );
+  }
 }

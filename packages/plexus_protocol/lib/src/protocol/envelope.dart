@@ -2,6 +2,15 @@
 ///
 /// All peer-to-peer communication is framed as CBOR-encoded envelopes.
 /// The envelope contains routing metadata plus the encrypted payload.
+library plexus_protocol.envelope;
+
+import 'frame_type.dart';
+import 'codecs/frame_codec.dart';
+
+/// The wire envelope that wraps every Plexus frame.
+///
+/// All peer-to-peer communication is framed as CBOR-encoded envelopes.
+/// The envelope contains routing metadata plus the encrypted payload.
 class Envelope {
   /// Protocol version this envelope conforms to.
   final int protocolVersion;
@@ -51,10 +60,10 @@ class Envelope {
   });
 
   /// Encodes this envelope to CBOR bytes.
-  List<int> encode();
+  List<int> encode() => encodeEnvelope(this);
 
   /// Decodes CBOR bytes into an [Envelope].
-  factory Envelope.decode(List<int> bytes);
+  factory Envelope.decode(List<int> bytes) => decodeEnvelope(bytes);
 
   /// Creates a copy with updated hop count and TTL.
   Envelope withHopIncrement({

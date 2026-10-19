@@ -1,5 +1,5 @@
 name: plexus_crypto
-description: Plexus cryptography — X3DH handshake, Double Ratchet, identity keys, encryption.
+description: Plexus cryptography — identity keys, fingerprints, encryption.
 version: 1.0.0
 publish_to: none
 
@@ -9,10 +9,7 @@ environment:
 dependencies:
   plexus_core:
     path: ../plexus_core
-  cryptography: ^2.7.0
-  cryptography_flutter: ^2.3.2
-  pointycastle: ^4.0.0
-  basic_utils: ^5.8.2
+  crypto: ^3.0.6
   convert: ^3.1.1
   meta: ^1.18.0
 

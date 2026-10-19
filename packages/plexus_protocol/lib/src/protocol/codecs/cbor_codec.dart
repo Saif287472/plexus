@@ -1,40 +1,38 @@
 /// CBOR encoding/decoding helpers for the Plexus protocol.
-///
-/// Uses the `cbor` package for deterministic CBOR encoding (RFC 8949 §4.2).
 library plexus_protocol.codecs.cbor_codec;
 
 import 'package:cbor/cbor.dart';
 
+/// The CBOR codec instance used for all Plexus wire encoding.
+final _cbor = CborSimpleCodec();
+
+/// Encodes a Dart object (map, list, string, int, etc.) to CBOR bytes.
+List<int> cborEncode(Object? object) {
+  return _cbor.encode(object);
+}
+
+/// Decodes CBOR bytes to a Dart object.
+Object? cborDecode(List<int> bytes) {
+  return _cbor.decode(bytes);
+}
+
 /// Encodes a map to CBOR bytes.
-List<int> cborEncode(Map<String, dynamic> map) {
-  return CborEncoder.encode(map);
+List<int> cborEncodeMap(Map<String, dynamic> map) {
+  return _cbor.encode(map);
 }
 
 /// Decodes CBOR bytes to a map.
-Map<String, dynamic> cborDecode(List<int> bytes) {
-  return CborDecoder.decode(bytes) as Map<String, dynamic>;
-}
-
-/// Encodes a value to CBOR bytes.
-List<int> cborEncodeValue(dynamic value) {
-  return CborEncoder.encode(value);
-}
-
-/// Decodes CBOR bytes to a value.
-dynamic cborDecodeValue(List<int> bytes) {
-  return CborDecoder.decode(bytes);
+Map<String, dynamic> cborDecodeMap(List<int> bytes) {
+  return cborDecode(bytes) as Map<String, dynamic>;
 }
 
 /// Encodes a list of bytes to CBOR byte string.
 List<int> cborEncodeBytes(List<int> bytes) {
-  return CborEncoder.encode(CborByteString(bytes));
+  return _cbor.encode(bytes);
 }
 
 /// Decodes a CBOR byte string to a list of bytes.
-List<int> cborDecodeBytes(dynamic value) {
-  if (value is CborByteString) {
-    return List<int>.from(value.bytes);
-  }
+List<int> cborDecodeBytes(Object? value) {
   if (value is List<int>) {
     return List<int>.from(value);
   }
